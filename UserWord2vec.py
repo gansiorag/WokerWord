@@ -93,8 +93,65 @@ def page2_click_btn_Ras():
         strD4=" = "+ str(result)
         page2_lineText_TextData.insert(INSERT,strD1+strD2+strD3+strD4)
      
-# page3  Контекстный анализ коротких фраз
+# page3  Контекстный анализ предложений
+def page3_click_btn_Kontext():
+    pole1=int(20)
+    pole2=int(7)
+    
+    #количество слов
+    page3_lineTextFileSlovar.insert(1.0,"дорога автомобиль шина небо")
+    predl=page3_lineText_IshPredl.get('1.0',END+'-1c')
 
+   slovos=predl.split(" ")
+    for slovo in slovos:
+         slovo.replace(' ','')
+    print(slovos)
+    kolslov=len(slovos)
+    
+    baza_slovar=sqlite3
+    baza_slovar=sqlite3.connect(name_slovar)
+    cursorSlovar=baza_slovar.cursor()
+    cursorSlovar.execute("select slovo, chast from slovos where slovo like '"+slovo+"%';")
+    slugSpis=cursorSlovar.fetchone()
+    if slugSpis is None:
+        messagebox.showinfo("Слова нет в словаре корпуса.","Введите другое слово.")
+    else:
+        page3_lineText_TextData.delete(1.0,END)
+
+        result=wv.doesnt_match(slovos)
+        strD1="Лишнее слово в предложении - "
+        page3_lineText_TextData.insert(INSERT,strD1+rezult)
+        
+
+
+
+# Определить пошожесть фраз
+def page3_click_btn_Ras():
+    pole1=int(20)
+    pole2=int(7)
+    slovo=page3_lineText_IshSlovo.get('1.0',END+'-1c')
+    slovo=slovo.replace(' ','')
+    dublslovo=page3_lineText_DublSlovo.get('1.0',END+'-1c')
+    dublslovo=dublslovo.replace(' ','')
+    baza_slovar=sqlite3
+    baza_slovar=sqlite3.connect(name_slovar)
+    cursorSlovar=baza_slovar.cursor()
+    cursorSlovar.execute("select slovo, chast from slovos where slovo like '"+slovo+"%';")
+    slugSpis1=cursorSlovar.fetchone()
+    cursorSlovar.execute("select slovo, chast from slovos where slovo like '"+dublslovo+"%';")
+    slugSpis2=cursorSlovar.fetchone()    
+    if slugSpis1 is None:
+        messagebox.showinfo("Слова 1 нет в словаре.","Введите другое слово.")
+    if slugSpis2 is None:
+        messagebox.showinfo("Слова 2 нет в словаре.","Введите другое слово.")      
+    if (not(slugSpis1 is None) and not(slugSpis2 is None)):
+        result=wv.distance(w1=str(slugSpis1[0]),w2=str(slugSpis2[0]))
+        page3_lineText_TextData.delete(1.0,END)
+        strD1="Расстояние между словами  \n" 
+        strD2=str(slugSpis1[0])+ " \n"
+        strD3=str(slugSpis2[0])+ " \n"
+        strD4=" = "+ str(result)
+        page3_lineText_TextData.insert(INSERT,strD1+strD2+strD3+strD4)
 
 
 
@@ -172,6 +229,40 @@ if __name__=="__main__":
 
     page2_lineText_TextData=Text(page2)
     page2_lineText_TextData.place(x=450, y=heighY-90, anchor="nw", heigh=360,width=500,bordermode=OUTSIDE)
+
+ # page3 Контекстный анализ предложений
+"""
+    page3_lineText_KolSlovo=Text(page3)
+    page3_lineText_KolSlovo.place(x=10, y=heighY-50, anchor="w", heigh=30,width=35,bordermode=OUTSIDE)
+    page3_lineText_KolSlovo.insert(1.0,"20")
+
+    page3_label_Kol_Slovo=Label(page3,text="Количество слов в выдаче. По умолчанию 20")
+    page3_label_Kol_Slovo.place(x=45, y=heighY-50, anchor="w", heigh=30,width=350,bordermode=OUTSIDE)                             
+"""
+    #Ввод первого предложения
+    page3_label_Nom1_Predl=Label(page3,text="Предложение 1")
+    page3_label_Nom1_Predl.place(x=20, y=heighY-20, anchor="w", heigh=20,width=100,bordermode=OUTSIDE)
+    
+    page3_lineText_IshPredl=Text(page3)
+    page3_lineText_IshPredl.place(x=10, y=heighY, anchor="w", heigh=30,width=200,bordermode=OUTSIDE)
+
+    page3_btn_Kontext=Button(page3,text="Показать лишние слова",command=page2_click_btn_Kontext)
+    page3_btn_Kontext.place(x=215, y=heighY, anchor="w", heigh=30,width=200,bordermode=OUTSIDE)
+
+    #Ввод второго предложения    
+    page3_label_Nom2_Predl=Label(page3,text="Слово 2")
+    page3_label_Nom2_Predl.place(x=20, y=heighY+30, anchor="w", heigh=20,width=100,bordermode=OUTSIDE)
+    
+    page3_lineText_DublPredl=Text(page3)
+    page3_lineText_DublPredl.place(x=10, y=heighY+50, anchor="w", heigh=30,width=200,bordermode=OUTSIDE)
+
+    page3_btn_Ras=Button(page3,text="Рассчитать расстояние между словами",command=page2_click_btn_Ras)
+    page3_btn_Ras.place(x=10, y=heighY+100, anchor="w", heigh=30,width=300,bordermode=OUTSIDE)
+
+    #Поле вывода результата
+    page3_lineText_TextData=Text(page3)
+    page3_lineText_TextData.place(x=450, y=heighY-90, anchor="nw", heigh=360,width=500,bordermode=OUTSIDE)
+    
     
   
 
