@@ -1,6 +1,8 @@
 from gensim.models import word2vec
 from gensim.test.utils import datapath
 from gensim.models import KeyedVectors
+from pyemd import emd
+from gensim.similarities import WmdSimilarity
 from tkinter import *
 from tkinter import ttk
 from tkinter.filedialog import askopenfilename
@@ -95,67 +97,90 @@ def page2_click_btn_Ras():
      
 # page3  Контекстный анализ предложений
 def page3_click_btn_Kontext():
-    pole1=int(20)
-    pole2=int(7)
-    
-    #количество слов
-    page3_lineText_IshPredl.delete(1.0,END)
-    page3_lineText_IshPredl.insert(1.0,"дорога автомобиль колесо небо")
+    slugSpis1=[]
+    slugSpis2=[]
+    slugSpis3=[]
+    result=""
+    #лишнее слово
     predl=page3_lineText_IshPredl.get('1.0',END+'-1c')
-
     slovos=predl.split()
-    print(slovos)
-    '''
     for slovo in slovos:
          slovo.replace(' ','')
-    print(slovos)
-    kolslov=len(slovos)
-    
     baza_slovar=sqlite3
     baza_slovar=sqlite3.connect(name_slovar)
     cursorSlovar=baza_slovar.cursor()
-    cursorSlovar.execute("select slovo, chast from slovos where slovo like '"+slovo+"%';")
-    slugSpis=cursorSlovar.fetchone()
-    if slugSpis is None:
-        messagebox.showinfo("Слова нет в словаре корпуса.","Введите другое слово.")
-    else:
-        page3_lineText_TextData.delete(1.0,END)
-'''
-    result=wv.doesnt_match(slovos)
-    strD1="Лишнее слово в предложении - "
-    page3_lineText_TextData.insert(INSERT,strD1+rezult)
+    slugSpis2.clear()
+    for slovo in slovos:
+            cursorSlovar.execute("select slovo, chast from slovos where slovo like '"+slovo+"%';")
+            slugSpis1=cursorSlovar.fetchone()
+            if slugSpis1 is None:
+              messagebox.showinfo("Слова "+slovo+" нет в словаре корпуса.","Введите другое слово.")
+              break
+            else:
+              slugSpis2.append(slugSpis1)
+    if len(slugSpis2)==len(slovos):
+          for slovo in slugSpis2:
+              slugSpis3.append(slovo[0])
+          result=wv.doesnt_match(slugSpis3)
+          page3_lineText_TextData.delete(1.0,END)    
+          strD1="Лишнее слово в предложении - "
+          page3_lineText_TextData.insert(INSERT,strD1+result)
         
 
 
 
 # Определить пошожесть фраз
 def page3_click_btn_Ras():
-    pole1=int(20)
-    pole2=int(7)
-    slovo=page3_lineText_IshSlovo.get('1.0',END+'-1c')
-    slovo=slovo.replace(' ','')
-    dublslovo=page3_lineText_DublSlovo.get('1.0',END+'-1c')
-    dublslovo=dublslovo.replace(' ','')
+    slugSpis1=[]
+    slugSpis2=[]
+    slugSpis3=[]
+    slugSpis4=[]
+    #расстояние между фразами
+    predl1=page3_lineText_IshPredl.get('1.0',END+'-1c')
+    predl2=page3_lineText_DublPredl.get('1.0',END+'-1c')
+    slovos=predl1.split()
+    for slovo in slovos:
+         slovo.replace(' ','')
     baza_slovar=sqlite3
     baza_slovar=sqlite3.connect(name_slovar)
     cursorSlovar=baza_slovar.cursor()
-    cursorSlovar.execute("select slovo, chast from slovos where slovo like '"+slovo+"%';")
-    slugSpis1=cursorSlovar.fetchone()
-    cursorSlovar.execute("select slovo, chast from slovos where slovo like '"+dublslovo+"%';")
-    slugSpis2=cursorSlovar.fetchone()    
-    if slugSpis1 is None:
-        messagebox.showinfo("Слова 1 нет в словаре.","Введите другое слово.")
-    if slugSpis2 is None:
-        messagebox.showinfo("Слова 2 нет в словаре.","Введите другое слово.")      
-    if (not(slugSpis1 is None) and not(slugSpis2 is None)):
-        result=wv.distance(w1=str(slugSpis1[0]),w2=str(slugSpis2[0]))
-        page3_lineText_TextData.delete(1.0,END)
-        strD1="Расстояние между словами  \n" 
-        strD2=str(slugSpis1[0])+ " \n"
-        strD3=str(slugSpis2[0])+ " \n"
-        strD4=" = "+ str(result)
-        page3_lineText_TextData.insert(INSERT,strD1+strD2+strD3+strD4)
-
+    #обрабатываем предложение 1
+    slugSpis2.clear()
+    for slovo in slovos:
+            cursorSlovar.execute("select slovo, chast from slovos where slovo like '"+slovo+"%';")
+            slugSpis1=cursorSlovar.fetchone()
+            if slugSpis1 is None:
+              messagebox.showinfo("Слова "+slovo+" нет в словаре корпуса.","Введите другое слово.")
+              break
+            else:
+              slugSpis2.append(slugSpis1)
+    if len(slugSpis2)==len(slovos):
+          for slovo in slugSpis2:
+              slugSpis3.append(slovo[0])
+    #обрабатываем предложение 1          
+    slovos=predl2.split()
+    for slovo in slovos:
+         slovo.replace(' ','')
+    baza_slovar=sqlite3
+    baza_slovar=sqlite3.connect(name_slovar)
+    cursorSlovar=baza_slovar.cursor()
+    slugSpis2.clear()
+    for slovo in slovos:
+            cursorSlovar.execute("select slovo, chast from slovos where slovo like '"+slovo+"%';")
+            slugSpis1=cursorSlovar.fetchone()
+            if slugSpis1 is None:
+              messagebox.showinfo("Слова "+slovo+" нет в словаре корпуса.","Введите другое слово.")
+              break
+            else:
+              slugSpis2.append(slugSpis1)
+    if len(slugSpis2)==len(slovos):
+          for slovo in slugSpis2:
+              slugSpis4.append(slovo[0])
+           
+          result1=wv.wmdistance(slugSpis3, slugSpis4)
+          page3_lineText_TextData.delete(1.0,END)    
+          strD1="Расстояние между фразами - "
+          page3_lineText_TextData.insert(INSERT,strD1+"{:.4f}".format(result1))
 
 
 
@@ -248,7 +273,7 @@ if __name__=="__main__":
     page3_lineText_IshPredl=Text(page3)
     page3_lineText_IshPredl.place(x=10, y=heighY, anchor="w", heigh=30,width=400,bordermode=OUTSIDE)
 
-    page3_btn_Kontext=Button(page3,text="Показать лишние слова",command=page3_click_btn_Kontext)
+    page3_btn_Kontext=Button(page3,text="Показать лишние слово",command=page3_click_btn_Kontext)
     page3_btn_Kontext.place(x=415, y=heighY, anchor="w", heigh=30,width=200,bordermode=OUTSIDE)
 
     #Ввод второго предложения    
@@ -258,7 +283,7 @@ if __name__=="__main__":
     page3_lineText_DublPredl=Text(page3)
     page3_lineText_DublPredl.place(x=10, y=heighY+50, anchor="w", heigh=30,width=400,bordermode=OUTSIDE)
 
-    page3_btn_Ras=Button(page3,text="Рассчитать расстояние между предлжениями",command=page2_click_btn_Ras)
+    page3_btn_Ras=Button(page3,text="Рассчитать расстояние между предлжениями",command=page3_click_btn_Ras)
     page3_btn_Ras.place(x=10, y=heighY+100, anchor="w", heigh=30,width=400,bordermode=OUTSIDE)
 
     #Поле вывода результата
