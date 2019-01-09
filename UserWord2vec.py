@@ -99,10 +99,13 @@ def page3_click_btn_Kontext():
     pole2=int(7)
     
     #количество слов
-    page3_lineTextFileSlovar.insert(1.0,"дорога автомобиль шина небо")
+    page3_lineText_IshPredl.delete(1.0,END)
+    page3_lineText_IshPredl.insert(1.0,"дорога автомобиль колесо небо")
     predl=page3_lineText_IshPredl.get('1.0',END+'-1c')
 
-   slovos=predl.split(" ")
+    slovos=predl.split()
+    print(slovos)
+    '''
     for slovo in slovos:
          slovo.replace(' ','')
     print(slovos)
@@ -117,10 +120,10 @@ def page3_click_btn_Kontext():
         messagebox.showinfo("Слова нет в словаре корпуса.","Введите другое слово.")
     else:
         page3_lineText_TextData.delete(1.0,END)
-
-        result=wv.doesnt_match(slovos)
-        strD1="Лишнее слово в предложении - "
-        page3_lineText_TextData.insert(INSERT,strD1+rezult)
+'''
+    result=wv.doesnt_match(slovos)
+    strD1="Лишнее слово в предложении - "
+    page3_lineText_TextData.insert(INSERT,strD1+rezult)
         
 
 
@@ -226,42 +229,41 @@ if __name__=="__main__":
     page2_btn_Ras=Button(page2,text="Рассчитать расстояние между словами",command=page2_click_btn_Ras)
     page2_btn_Ras.place(x=10, y=heighY+100, anchor="w", heigh=30,width=300,bordermode=OUTSIDE)
 
-
     page2_lineText_TextData=Text(page2)
     page2_lineText_TextData.place(x=450, y=heighY-90, anchor="nw", heigh=360,width=500,bordermode=OUTSIDE)
 
- # page3 Контекстный анализ предложений
-"""
+    # page3 Контекстный анализ предложений
+    """
     page3_lineText_KolSlovo=Text(page3)
     page3_lineText_KolSlovo.place(x=10, y=heighY-50, anchor="w", heigh=30,width=35,bordermode=OUTSIDE)
     page3_lineText_KolSlovo.insert(1.0,"20")
 
     page3_label_Kol_Slovo=Label(page3,text="Количество слов в выдаче. По умолчанию 20")
     page3_label_Kol_Slovo.place(x=45, y=heighY-50, anchor="w", heigh=30,width=350,bordermode=OUTSIDE)                             
-"""
+    """
     #Ввод первого предложения
     page3_label_Nom1_Predl=Label(page3,text="Предложение 1")
-    page3_label_Nom1_Predl.place(x=20, y=heighY-20, anchor="w", heigh=20,width=100,bordermode=OUTSIDE)
+    page3_label_Nom1_Predl.place(x=20, y=heighY-20, anchor="w", heigh=20,width=120,bordermode=OUTSIDE)
     
     page3_lineText_IshPredl=Text(page3)
-    page3_lineText_IshPredl.place(x=10, y=heighY, anchor="w", heigh=30,width=200,bordermode=OUTSIDE)
+    page3_lineText_IshPredl.place(x=10, y=heighY, anchor="w", heigh=30,width=400,bordermode=OUTSIDE)
 
-    page3_btn_Kontext=Button(page3,text="Показать лишние слова",command=page2_click_btn_Kontext)
-    page3_btn_Kontext.place(x=215, y=heighY, anchor="w", heigh=30,width=200,bordermode=OUTSIDE)
+    page3_btn_Kontext=Button(page3,text="Показать лишние слова",command=page3_click_btn_Kontext)
+    page3_btn_Kontext.place(x=415, y=heighY, anchor="w", heigh=30,width=200,bordermode=OUTSIDE)
 
     #Ввод второго предложения    
-    page3_label_Nom2_Predl=Label(page3,text="Слово 2")
-    page3_label_Nom2_Predl.place(x=20, y=heighY+30, anchor="w", heigh=20,width=100,bordermode=OUTSIDE)
+    page3_label_Nom2_Predl=Label(page3,text="Предложение 2")
+    page3_label_Nom2_Predl.place(x=20, y=heighY+30, anchor="w", heigh=20,width=120,bordermode=OUTSIDE)
     
     page3_lineText_DublPredl=Text(page3)
-    page3_lineText_DublPredl.place(x=10, y=heighY+50, anchor="w", heigh=30,width=200,bordermode=OUTSIDE)
+    page3_lineText_DublPredl.place(x=10, y=heighY+50, anchor="w", heigh=30,width=400,bordermode=OUTSIDE)
 
-    page3_btn_Ras=Button(page3,text="Рассчитать расстояние между словами",command=page2_click_btn_Ras)
-    page3_btn_Ras.place(x=10, y=heighY+100, anchor="w", heigh=30,width=300,bordermode=OUTSIDE)
+    page3_btn_Ras=Button(page3,text="Рассчитать расстояние между предлжениями",command=page2_click_btn_Ras)
+    page3_btn_Ras.place(x=10, y=heighY+100, anchor="w", heigh=30,width=400,bordermode=OUTSIDE)
 
     #Поле вывода результата
     page3_lineText_TextData=Text(page3)
-    page3_lineText_TextData.place(x=450, y=heighY-90, anchor="nw", heigh=360,width=500,bordermode=OUTSIDE)
+    page3_lineText_TextData.place(x=620, y=heighY-90, anchor="nw", heigh=360,width=300,bordermode=OUTSIDE)
     
     
   
