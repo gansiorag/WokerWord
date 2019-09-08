@@ -1,0 +1,101 @@
+from gensim.models import KeyedVectors
+import re
+
+class wordprocessing:
+    slova={}
+    lemmatizator = {}
+    slovoStop = {}
+    rullmas = []
+    token=[]
+    wv = KeyedVectors
+
+# Загрузка словаря
+def load_slovar(filename):
+    ishFile = open(filename, 'r')
+    ishText = ishFile.readline()
+    slova = {}
+    while ishText:
+        slovo = ishText.split(' ')
+        slova[slovo[0].strip()] = int(slovo[1])
+        ishText = ishFile.readline()
+    return slova
+
+# Загрузка лемматизатора
+def load_lemmatizator(namefile):
+    ishFile = open(namefile, 'r')
+    lemmatVoc = {}
+    linetxt = ""
+    linetxt = ishFile.readline()
+    while linetxt:
+        slovo = linetxt.split('@')
+        # print(slovo)
+        lemmatVoc[slovo[0].strip()] = slovo[1].strip()
+        linetxt = ishFile.readline()
+    return lemmatVoc
+
+
+
+# Загрузка стоп слов
+def load_stopSlova(namefile):
+    ishFile = open(namefile, 'r')
+    stop_slovo = {}
+    linetxt = ""
+    linetxt = ishFile.readline()
+    while linetxt:
+        stop_slovo[linetxt.strip()] = "1"
+        linetxt = ishFile.readline()
+    return stop_slovo
+
+
+def rulls():
+    rull_mas = []
+    rull_mas.append(re.compile(r'[^а-я]+'))
+    rull_mas.append(re.compile(r'\b[а-я][а-я]\s'))
+    rull_mas.append(re.compile(r'\b[а-я][а-я]\b'))
+    rull_mas.append(re.compile(r'\b[а-я]\s'))
+    rull_mas.append(re.compile(r'\b[а-я]\b'))
+    rull_mas.append(re.compile(r'[ ]+'))
+    return rull_mas
+
+
+# Процедура токенезации
+def tocenizator(predlog_first, slovoStop, rullmas):
+    """
+    Токенезация предложений
+    оставляются только текст на русском
+    удаляются стоп слова, предлоги, и т.п.
+    :param predlog_first:
+    :param slovoStop: слоарь стоп слов
+    :param rullmas - набор откомпелированных правил
+    :return:
+    """
+    slugstr = predlog_first.lower()
+    slugstr = slugstr.strip()
+    moderstr = []
+    moderstr.clear()
+    slugstr1 = rullmas[0].sub(' ', slugstr)
+    slugstr = rullmas[1].sub(' ', slugstr1)
+    slugstr1 = rullmas[2].sub('', slugstr)
+    slugstr2 = rullmas[3].sub(' ', slugstr1)
+    slugstr = rullmas[4].sub('', slugstr2)
+    sluglist = slugstr.split()
+
+    token = [x for x in sluglist if x not in slovoStop]
+
+    return token  # возвращается список
+
+
+# процедура лемматизации предложения
+# на вход дается токенезированное предложение
+# на выходе лемматизированное предложение
+
+def lemmatizatorPred(ts,lemmatizator):
+    slovos = ts.strip().split()  #
+    lempred = ""
+    krit = ""
+    for slovo in slovos:
+        slovo.strip()
+        krit = lemmatizator.get(slovo)
+        if krit:
+            lempred = lempred + krit.strip() + " "
+    return lempred
