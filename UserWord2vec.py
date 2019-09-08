@@ -14,7 +14,6 @@
 ###############################################################################
 
 from gensim.test.utils import datapath
-
 from tkinter import *
 from tkinter import ttk
 from tkinter.filedialog import askopenfilename
@@ -22,9 +21,7 @@ from tkinter import messagebox
 import wordproc as wp
 
 
-global lexdata
-
-
+global lexdata # данные необходимые для обработки текста
 
 # page1 Начальные установки click Buttom
 # Загружаем словарь темы
@@ -48,7 +45,7 @@ def page1_click_btn_Vector():
 # page1 Загружаем лемматизатор
 def page1_clic_btn_Lemmatisator():
     page1_lineTextFileLemat.delete(1.0, END)
-    name_lemmat = askopenfilename(filetypes=(("lem files", "*.lem"), ("All files", "*.*")))
+    name_lemmat = askopenfilename(filetypes=(("lem files", "*.zip"), ("All files", "*.*")))
     page1_lineTextFileLemat.insert(1.0, name_lemmat)
     lexdata.lemmatizator = wp.load_lemmatizator(name_lemmat)
 
@@ -72,8 +69,8 @@ def page1_clic_btn_Tizer():
     ishtxt = ishfile.readline()
     kstr = 0
     while ishtxt:
-        ishtxt1 = wp.tocenizator(ishtxt)
-        ishtxt1 = wp.lemmatizatorPred(ishtxt1)
+        ishtxt1 = wp.tocenizator(ishtxt,lexdata.slovoStop, lexdata.rullmas)
+        ishtxt1 = wp.lemmatizatorPred(ishtxt1,lexdata.lemmatizator)
         row.clear()
         tizers.append([])
         tizers[kstr].append(ishtxt)
@@ -82,13 +79,8 @@ def page1_clic_btn_Tizer():
         # print(tizers[kstr][0],tizers[kstr][1])
         kstr += 1
         if kstr == 250: break
-    print(kstr)
-    for rw in tizers:
-        print(rw)
-    global AllTizer
-    global kolTiz
-    AllTizer = tizers
-    kolTiz = kstr
+    lexdata.AllTizer = tizers
+    lexdata.kolTiz = kstr
 
 
 # page2 Контекстный анализ слов click Buttom
@@ -174,9 +166,9 @@ def page3_click_btn_Kontext():
     predl = page3_lineText_IshPredl.get('1.0', END + '-1c')  #
     predl = predl.strip()
     print(predl)
-    predl = wp.tocenizator(predl)
+    predl = wp.tocenizator(predl,lexdata.slovoStop, lexdata.rullmas)
     print(predl)
-    result = wp.lemmatizatorPred(predl)
+    result = wp.lemmatizatorPred(predl,lexdata.lemmatizator)
     print(result)
     slovos = result.strip().split(" ")
     slugSpis2.clear()
@@ -208,8 +200,8 @@ def page3_click_btn_SearchTiz():
         slugSpis4 = []
         # расстояние между фразами
 
-        predl1 = wp.tocenizator(predl1)
-        predl1 = wp.lemmatizatorPred(predl1)
+        predl1 = wp.tocenizator(predl1,lexdata.slovoStop, lexdata.rullmas)
+        predl1 = wp.lemmatizatorPred(predl1,lexdata.lemmatizator)
         slovos1 = predl1.strip().split()
         k1 = 0
         for slovo in slovos1:
@@ -224,7 +216,7 @@ def page3_click_btn_SearchTiz():
         # print(AllTizer)
         if (k1 == 0):
             iind = 0
-            for tizer in AllTizer:
+            for tizer in lexdata.AllTizer:
                 slovos2 = tizer[1].strip().split()
                 # print(slovos2)
                 result1 = lexdata.wv.wmdistance(slovos1, slovos2)
@@ -237,7 +229,7 @@ def page3_click_btn_SearchTiz():
             iind = 0
             for kk in slugSpis1:
                 if iind < 4:
-                    strD1 = AllTizer[kk[0]][0]
+                    strD1 = lexdata.AllTizer[kk[0]][0]
                     result1 = kk[1]
                     page3_lineText_TextData.insert(INSERT, strD1 + "{:.4f}".format(result1) + "\n")
                     iind += 1
@@ -254,8 +246,8 @@ def page3_click_btn_SearchTiz1():
         slugSpis4 = []
         # расстояние между фразами
 
-        predl1 = lexdata.tocenizator(predl1)
-        predl1 = lexdata.lemmatizatorPred(predl1)
+        predl1 = lexdata.tocenizator(predl1,lexdata.slovoStop, lexdata.rullmas)
+        predl1 = lexdata.lemmatizatorPred(predl1,lexdata.lemmatizator)
         slovos1 = predl1.strip().split()
         k1 = 0
         for slovo in slovos1:
@@ -272,7 +264,7 @@ def page3_click_btn_SearchTiz1():
         # print(AllTizer)
         if (k1 == 0):
             iind = 0
-            for tizer in AllTizer:
+            for tizer in lexdata.AllTizer:
                 slovos2 = tizer[1].strip().split()
                 kolslov = 0
                 wesTiz = 0.0
@@ -296,7 +288,7 @@ def page3_click_btn_SearchTiz1():
             iind = 0
             for kk in slugSpis1:
                 if iind < 4:
-                    strD1 = AllTizer[kk[0]][0]
+                    strD1 = lexdata.AllTizer[kk[0]][0]
                     result1 = kk[1]
                     page3_lineText_TextData.insert(INSERT, strD1 + "{:.4f}".format(result1) + "\n")
                     iind += 1
@@ -310,8 +302,8 @@ def page3_click_btn_SearchTiz2():
         slugSpis1 = []
 
         # расстояние между фразами
-        predl2 = wp.tocenizator(predl1)
-        predl1 = wp.lemmatizatorPred(predl2)
+        predl2 = wp.tocenizator(predl1,lexdata.slovoStop, lexdata.rullmas)
+        predl1 = wp.lemmatizatorPred(predl2,lexdata.lemmatizator)
         slovos1 = predl1.strip().split()
         result1 = 0.0
         k1 = 0
@@ -327,7 +319,7 @@ def page3_click_btn_SearchTiz2():
         page3_lineText_TextData.delete(1.0, END)
         if (k1 == 0):
             iind = 0
-            for tizer in AllTizer:
+            for tizer in lexdata.AllTizer:
                 slovos2 = tizer[1].strip().split()
                 wesTiz.clear()
                 for slovoTitle in slovos1:
@@ -347,7 +339,7 @@ def page3_click_btn_SearchTiz2():
             iind = 0
             for kk in slugSpis1:
                 if iind < 4:
-                    strD1 = AllTizer[kk[0]][0]
+                    strD1 = lexdata.AllTizer[kk[0]][0]
                     result1 = kk[1]
                     page3_lineText_TextData.insert(INSERT, strD1 + "{:.4f}".format(result1) + "\n")
                     iind += 1
@@ -361,8 +353,8 @@ def page3_click_btn_SearchTiz3():
         slugSpis1 = []
 
         # расстояние между фразами
-        predl2 = wp.tocenizator(predl1)
-        predl1 = wp.lemmatizatorPred(predl2)
+        predl2 = wp.tocenizator(predl1,lexdata.slovoStop, lexdata.rullmas)
+        predl1 = wp.lemmatizatorPred(predl2,lexdata.lemmatizator)
         slovos1ist = predl1.strip().split()  # Список слов в тайтле
         result1 = 0.0
         k1 = 0
@@ -378,7 +370,7 @@ def page3_click_btn_SearchTiz3():
         page3_lineText_TextData.delete(1.0, END)
         if (k1 == 1):  # В предложении есть слова с которыми можно работать
             iind = 0
-            for tizer in AllTizer:  # Цикл по всем тизерам
+            for tizer in lexdata.AllTizer:  # Цикл по всем тизерам
                 slovos2 = tizer[1].strip().split()  # разбиваем тизер по словам
                 wesTiz.clear()
                 for slovoTitle in slovos1ist:  # цикл по словам в тайтлах
@@ -409,7 +401,7 @@ def page3_click_btn_SearchTiz3():
             iind = 0
             for kk in slugSpis1:
                 if iind < 4:
-                    strD1 = AllTizer[kk[0]][0]
+                    strD1 = lexdata.AllTizer[kk[0]][0]
                     result1 = kk[1]
                     page3_lineText_TextData.insert(INSERT, strD1 + "{:.4f}".format(result1) + "\n")
                     iind += 1
@@ -424,10 +416,10 @@ def page3_click_btn_Ras():
     # расстояние между фразами
     predl1 = page3_lineText_IshPredl.get('1.0', END + '-1c')
     predl2 = page3_lineText_DublPredl.get('1.0', END + '-1c')
-    predl1 = wp.tocenizator(predl1)
-    predl1 = wp.lemmatizatorPred(predl1)
-    predl2 = wp.tocenizator(predl2)
-    predl2 = wp.lemmatizatorPred(predl2)
+    predl1 = wp.tocenizator(predl1,lexdata.slovoStop, lexdata.rullmas)
+    predl1 = wp.lemmatizatorPred(predl1,lexdata.lemmatizator)
+    predl2 = wp.tocenizator(predl2,lexdata.slovoStop, lexdata.rullmas)
+    predl2 = wp.lemmatizatorPred(predl2,lexdata.lemmatizator)
     slovos1 = predl1.strip().split()
     k1 = 0
     for slovo in slovos1:
@@ -446,7 +438,7 @@ def page3_click_btn_Ras():
             messagebox.showinfo("Слова " + slovo + " нет в словаре корпуса.", "Введите другое слово.")
             k2 = 1
     if (k1 == 0 and k2 == 0):
-        result1 = wv.wmdistance(slovos1, slovos2)
+        result1 = lexdata.wv.wmdistance(slovos1, slovos2)
         page3_lineText_TextData.delete(1.0, END)
         strD1 = "Расстояние между фразами - "
         page3_lineText_TextData.insert(INSERT, strD1 + "{:.4f}".format(result1))
@@ -459,6 +451,7 @@ def page3_click_btn_Ras():
 
 if __name__ == "__main__":
     lexdata=wp.wordprocessing #массив лексических данных
+    lexdata.rullmas=wp.rulls()
     root = Tk()
     root.title("Контекстный анализ слов и коротких фраз")
     root.geometry("1200x500")

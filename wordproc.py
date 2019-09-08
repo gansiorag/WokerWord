@@ -1,5 +1,7 @@
 from gensim.models import KeyedVectors
 import re
+import zipfile
+import os
 
 class wordprocessing:
     slova={}
@@ -7,6 +9,8 @@ class wordprocessing:
     slovoStop = {}
     rullmas = []
     token=[]
+    AllTizer=[]
+    kolTiz=0
     wv = KeyedVectors
 
 # Загрузка словаря
@@ -22,28 +26,24 @@ def load_slovar(filename):
 
 # Загрузка лемматизатора
 def load_lemmatizator(namefile):
-    ishFile = open(namefile, 'r')
     lemmatVoc = {}
-    linetxt = ""
-    linetxt = ishFile.readline()
-    while linetxt:
-        slovo = linetxt.split('@')
-        # print(slovo)
-        lemmatVoc[slovo[0].strip()] = slovo[1].strip()
-        linetxt = ishFile.readline()
+    namefiledubl=os.path.basename(namefile).split(".")[0]+".lem"
+    with zipfile.ZipFile(namefile) as myzip:
+        with myzip.open(namefiledubl) as myfile:
+            for line in myfile:
+                linetxt =line.decode('utf-8')
+                slovo = linetxt.split('@')
+                lemmatVoc[slovo[0].strip()] = slovo[1].strip()
     return lemmatVoc
 
 
 
 # Загрузка стоп слов
 def load_stopSlova(namefile):
-    ishFile = open(namefile, 'r')
     stop_slovo = {}
-    linetxt = ""
-    linetxt = ishFile.readline()
-    while linetxt:
-        stop_slovo[linetxt.strip()] = "1"
-        linetxt = ishFile.readline()
+    with open(namefile, 'r') as myfile:
+        for linetxt in myfile :
+            stop_slovo[linetxt.strip()] = "1"
     return stop_slovo
 
 
@@ -90,10 +90,8 @@ def tocenizator(predlog_first, slovoStop, rullmas):
 # на выходе лемматизированное предложение
 
 def lemmatizatorPred(ts,lemmatizator):
-    slovos = ts.strip().split()  #
     lempred = ""
-    krit = ""
-    for slovo in slovos:
+    for slovo in ts:
         slovo.strip()
         krit = lemmatizator.get(slovo)
         if krit:
