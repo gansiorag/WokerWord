@@ -2,7 +2,7 @@
 Created on 25 нояб. 2018 г.
 Сравнение титлов и тизеров. Они читаются из баз и результат 
 записывается в файл формата csv
-@author: al
+@author: Alexander Gansior
 '''
 import sys
 import os
