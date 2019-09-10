@@ -14,6 +14,7 @@
 ###############################################################################
 
 from gensim.test.utils import datapath
+from gensim.models import KeyedVectors
 from tkinter import *
 from tkinter import ttk
 from tkinter.filedialog import askopenfilename
@@ -39,7 +40,7 @@ def page1_click_btn_Vector():
     page1_lineTextFileVector.delete(1.0, END)
     name_vector = askopenfilename(filetypes=(("BIN files", "*.bin"), ("All files", "*.*")))
     page1_lineTextFileVector.insert(1.0, name_vector)
-    lexdata.wv.load_word2vec_format(datapath(name_vector), binary=True)
+    lexdata.wv=KeyedVectors.load_word2vec_format(datapath(name_vector), binary=True)
 
 
 # page1 Загружаем лемматизатор
@@ -76,7 +77,6 @@ def page1_clic_btn_Tizer():
         tizers[kstr].append(ishtxt)
         tizers[kstr].append(ishtxt1.strip())
         ishtxt = ishfile.readline()
-        # print(tizers[kstr][0],tizers[kstr][1])
         kstr += 1
         if kstr == 250: break
     lexdata.AllTizer = tizers
@@ -107,7 +107,7 @@ def page2_click_btn_Kontext():
             strD3 = str(lexdata.slovar.get(lemSlovo))
             strD3 = strD3.ljust(pole2, " ") + " |\n"
             page2_lineText_TextData.insert(INSERT, strD1 + strD2 + strD3)
-            result = lexdata.wv.most_similar(positive=[str(lemSlovo)], topn=100)
+            result = lexdata.wv.most_similar(positive=[lemSlovo], topn=100)
             ikprn = 0
             for strTab in result:
                 strD1 = str(strTab[0])
@@ -165,14 +165,10 @@ def page3_click_btn_Kontext():
     # лишнее слово
     predl = page3_lineText_IshPredl.get('1.0', END + '-1c')  #
     predl = predl.strip()
-    print(predl)
     predl = wp.tocenizator(predl,lexdata.slovoStop, lexdata.rullmas)
-    print(predl)
     result = wp.lemmatizatorPred(predl,lexdata.lemmatizator)
-    print(result)
     slovos = result.strip().split(" ")
     slugSpis2.clear()
-    print(slovos)
     for slovo in slovos:
         if lexdata.slovar.get(slovo.strip()) is None:
             messagebox.showinfo("Слова " + slovo + " нет в словаре корпуса.", "Введите другое слово.")
@@ -182,7 +178,7 @@ def page3_click_btn_Kontext():
     if len(slugSpis2) == len(slovos):
         for slovo in slugSpis2:
             slugSpis3.append(slovo[0])
-        result = wv.doesnt_match(slovos)
+        result = lexdata.wv.doesnt_match(slovos)
         page3_lineText_TextData.delete(1.0, END)
         strD1 = "Лишнее слово в предложении - "
         page3_lineText_TextData.insert(INSERT, strD1 + result)
@@ -213,14 +209,11 @@ def page3_click_btn_SearchTiz():
                 k1 = 1
         slovos2 = ""
         page3_lineText_TextData.delete(1.0, END)
-        # print(AllTizer)
         if (k1 == 0):
             iind = 0
             for tizer in lexdata.AllTizer:
                 slovos2 = tizer[1].strip().split()
-                # print(slovos2)
                 result1 = lexdata.wv.wmdistance(slovos1, slovos2)
-                # page3_lineText_TextData.delete(1.0,END)
                 slugSpis1.append([])
                 slugSpis1[iind].append(iind)
                 slugSpis1[iind].append(result1)
@@ -246,8 +239,8 @@ def page3_click_btn_SearchTiz1():
         slugSpis4 = []
         # расстояние между фразами
 
-        predl1 = lexdata.tocenizator(predl1,lexdata.slovoStop, lexdata.rullmas)
-        predl1 = lexdata.lemmatizatorPred(predl1,lexdata.lemmatizator)
+        predl1 = wp.tocenizator(predl1,lexdata.slovoStop, lexdata.rullmas)
+        predl1 = wp.lemmatizatorPred(predl1,lexdata.lemmatizator)
         slovos1 = predl1.strip().split()
         k1 = 0
         for slovo in slovos1:
@@ -261,7 +254,6 @@ def page3_click_btn_SearchTiz1():
         kolslov = 0
         wesTiz = 0.0
         page3_lineText_TextData.delete(1.0, END)
-        # print(AllTizer)
         if (k1 == 0):
             iind = 0
             for tizer in lexdata.AllTizer:
@@ -270,16 +262,11 @@ def page3_click_btn_SearchTiz1():
                 wesTiz = 0.0
                 for slovoTitle in slovos1:
                     if lexdata.slovar.get(slovoTitle.strip()):
-                        for lexdata.slovoTizer in slovos2:
+                        for slovoTizer in slovos2:
                             if lexdata.slovar.get(slovoTizer.strip()):
                                 kolslov = kolslov + 1
-                                # print(slovoTitle,slovoTizer)
-                                # print(wv.distance(w1=slovoTitle,w2=slovoTizer))
                                 wesTiz = wesTiz + lexdata.wv.distance(w1=slovoTitle, w2=slovoTizer)
-                                # print(wesTiz)
-                                # print(kolslov)
                 result1 = wesTiz / kolslov
-                # page3_lineText_TextData.delete(1.0,END)
                 slugSpis1.append([])
                 slugSpis1[iind].append(iind)
                 slugSpis1[iind].append(result1)
@@ -377,7 +364,7 @@ def page3_click_btn_SearchTiz3():
                     if lexdata.slovar.get(slovoTitle.strip()):  # Получаем слово тайтла из словаря
                         for slovoTizer in slovos2:  # цикл по всем словам тизера
                             if lexdata.slovar.get(slovoTizer.strip()):  # получаем слово тизера
-                                wesTiz.append(wp.wv.distance(w1=slovoTitle,
+                                wesTiz.append(lexdata.wv.distance(w1=slovoTitle,
                                                           w2=slovoTizer))  # ищем расстояние между словом тизера и тайтла
                 wesTiz = sorted(wesTiz)
                 if len(wesTiz) > 3:

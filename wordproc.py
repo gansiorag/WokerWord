@@ -11,7 +11,7 @@ class wordprocessing:
     token=[]
     AllTizer=[]
     kolTiz=0
-    wv = KeyedVectors
+    wv=KeyedVectors
 
 # Загрузка словаря
 def load_slovar(filename):
